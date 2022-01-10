@@ -9,6 +9,15 @@ RAMFS_COPY_BIN='fw_printenv fw_setenv'
 RAMFS_COPY_DATA='/etc/fw_env.config /var/lock/fw_printenv.lock'
 
 platform_check_image() {
+	local board=$(board_name)
+
+	case "$board" in
+	hatlab,gateboard-m1)
+		hatlab_check_image "$1"
+		return $?;
+		;;
+	esac
+
 	return 0
 }
 
@@ -108,6 +117,9 @@ platform_do_upgrade() {
 		echo "Kernel2 sequence number was reset to 0"
 		CI_KERNPART="Kernel"
 		nand_do_upgrade "$1"
+		;;
+	hatlab,gateboard-m1)
+		hatlab_do_upgrade "$1"
 		;;
 	*)
 		default_do_upgrade "$1"
